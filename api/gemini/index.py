@@ -10,6 +10,9 @@ class handler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length).decode('utf-8')
         try:
             payload = json.loads(post_data)
+            print("Dados recebidos da função Slack:")
+        print(f"Texto: {slack_text}")
+        print(f"URL de resposta: {response_url}")
             slack_text = payload.get('text')
             response_url = payload.get('response_url')
 
