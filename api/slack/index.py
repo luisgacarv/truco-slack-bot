@@ -14,10 +14,9 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        self.wfile.write(b'') # Resposta vazia para não mostrar nada no Slack
+        self.wfile.write(b'')
 
         # Pega a URL do seu projeto no Vercel a partir das variáveis de ambiente
-        # A URL deve ser no formato https://nome-do-seu-projeto.vercel.app
         vercel_url = os.getenv("VERCEL_URL")
 
         # Dados da requisição a serem enviados para a função do Gemini
@@ -25,7 +24,13 @@ class handler(BaseHTTPRequestHandler):
             "text": form_data.get('text', [''])[0],
             "response_url": form_data.get('response_url', [''])[0]
         }
+        
+        # O print abaixo é para debug, para confirmar que a URL está correta
+        print(f"Chamando a função Gemini na URL: https://{vercel_url}/api/gemini")
 
         # Faz a requisição HTTP POST para a segunda função (gemini) em segundo plano.
         if vercel_url:
-            requests.post(f"https://{vercel_url}/api/gemini", json=payload)
+            try:
+                requests.post(f"https://{vercel_url}/api/gemini", json=payload, timeout=5)
+            except requests.exceptions.RequestException as e:
+                print(f"Erro ao chamar a função Gemini: {e}")
