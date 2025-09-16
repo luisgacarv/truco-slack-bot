@@ -2,7 +2,6 @@ import os
 import json
 import requests
 from http.server import BaseHTTPRequestHandler
-from urllib.parse import parse_qs
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -10,11 +9,12 @@ class handler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length).decode('utf-8')
         try:
             payload = json.loads(post_data)
-            print("Dados recebidos da função Slack:")
-        print(f"Texto: {slack_text}")
-        print(f"URL de resposta: {response_url}")
             slack_text = payload.get('text')
             response_url = payload.get('response_url')
+
+            print("Dados recebidos da função Slack:")
+            print(f"Texto: {slack_text}")
+            print(f"URL de resposta: {response_url}")
 
             # Pega a chave de API da variável de ambiente
             api_key = os.getenv("GENAI_API_KEY")
@@ -61,7 +61,8 @@ class handler(BaseHTTPRequestHandler):
             }
             if 'response_url' in locals():
                 requests.post(response_url, data=json.dumps(error_payload), headers={'Content-Type': 'application/json'})
-            
+
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
