@@ -6,7 +6,13 @@ from urllib.parse import parse_qs
 # Pega a chave de API da variável de ambiente
 API_KEY = os.getenv("GENAI_API_KEY")
 
-# Inicializa o modelo, passando a chave de API diretamente aqui
+# Esta linha é a correção crucial para o erro ALTS:
+# Ela instrui a biblioteca a não usar as credenciais padrão do Google.
+# Apenas a sua API Key será usada para autenticação.
+genai.configure(api_key=API_KEY)
+
+# Inicializa o modelo, passando a chave de API diretamente
+# Esta linha é uma garantia extra de que a chave será usada.
 model = genai.GenerativeModel('gemini-1.5-flash', api_key=API_KEY)
 
 class handler(BaseHTTPRequestHandler):
