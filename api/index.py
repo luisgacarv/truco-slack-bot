@@ -3,17 +3,11 @@ import google.generativeai as genai
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
-# Configuração da API do Gemini
-API_KEY = os.getenv("GENAI_API_KEY", "AIzaSyBgkfdeOw96cwgZEMO7gMovR7g6QhNN6WU")
-genai.configure(api_key=API_KEY)
-print(f"API Key read: {API_KEY[:4]}...") # Imprime os 4 primeiros caracteres da chave
+# Pega a chave de API da variável de ambiente
+API_KEY = os.getenv("GENAI_API_KEY")
 
-# Substitua 'SUA_CHAVE_API' pela sua chave de API do Gemini
-API_KEY = os.getenv("GENAI_API_KEY", "AIzaSyBgkfdeOw96cwgZEMO7gMovR7g6QhNN6WU")
-genai.configure(api_key=API_KEY)
-
-# Inicializa o modelo
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Inicializa o modelo, passando a chave de API diretamente aqui
+model = genai.GenerativeModel('gemini-1.5-flash', api_key=API_KEY)
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -21,17 +15,15 @@ class handler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length).decode('utf-8')
         form_data = parse_qs(post_data)
 
-        # O Slack envia o texto do comando no parâmetro 'text'
         slack_text = form_data.get('text', [''])[0]
 
         try:
             if not slack_text:
-                response = "Por favor, forneça um texto para o Truco."
+                response = "Por favor, forneça um texto para o Gemini."
             else:
                 gemini_response = model.generate_content(slack_text)
                 response = gemini_response.text
 
-            # Formata a resposta para o Slack
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
