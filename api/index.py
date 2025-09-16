@@ -3,6 +3,11 @@ import google.generativeai as genai
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
+# Configuração da API do Gemini
+API_KEY = os.getenv("GENAI_API_KEY", "AIzaSyBgkfdeOw96cwgZEMO7gMovR7g6QhNN6WU")
+genai.configure(api_key=API_KEY)
+print(f"API Key read: {API_KEY[:4]}...") # Imprime os 4 primeiros caracteres da chave
+
 # Substitua 'SUA_CHAVE_API' pela sua chave de API do Gemini
 API_KEY = os.getenv("GENAI_API_KEY", "AIzaSyBgkfdeOw96cwgZEMO7gMovR7g6QhNN6WU")
 genai.configure(api_key=API_KEY)
